@@ -1,6 +1,5 @@
-set termguicolors
 set nocompatible
-"this line allows text to wrap on screen edge
+"this line prevents text to wrap on screen edge
 set wrap
 "vim-plug stuff
 silent! call plug#begin()
@@ -25,7 +24,7 @@ Plug 'qpkorr/vim-renamer'
 
 Plug 'majutsushi/tagbar'
 
-Plug 'w0rp/ale'
+Plug 'dense-analysis/ale'
 
 Plug 'Omnisharp/omnisharp-vim'
 
@@ -33,55 +32,142 @@ Plug 'tpope/vim-dispatch'
 
 Plug 'RRethy/vim-illuminate'
 
+Plug 'prabirshrestha/asyncomplete.vim'
+
+Plug 'gruvbox-community/gruvbox'
+
+Plug 'itchyny/lightline.vim'
+
+Plug 'shinchu/lightline-gruvbox.vim'
+
+Plug 'maximbaz/lightline-ale'
+
+Plug 'nickspoons/vim-sharpenup'
+
+Plug 'tpope/vim-fugitive'
+
 call plug#end()
 "buffer becomes hidden when focus is lost
 set hid
+set belloff=all
+set updatetime=1000
+set encoding=utf-8
+scriptencoding utf-8
+"This group handles all gruvbox things
+"===========================================================================================================
+"This line sets my background dark
+set background=dark
+"This line changes the theme of my editor.
+augroup ColorschemePreferences
+  autocmd!
+  " These preferences clear some gruvbox background colours, allowing transparency
+  autocmd ColorScheme * highlight Normal     ctermbg=0 guibg=#000000
+  autocmd ColorScheme * highlight SignColumn ctermbg=NONE guibg=NONE
+  autocmd ColorScheme * highlight Todo       ctermbg=NONE guibg=NONE
+  " Link ALE sign highlights to similar equivalents without background colours
+  autocmd ColorScheme * highlight link ALEErrorSign   WarningMsg
+  autocmd ColorScheme * highlight link ALEWarningSign ModeMsg
+  autocmd ColorScheme * highlight link ALEInfoSign    Identifier
+augroup END
+colorscheme gruvbox
+"===========================================================================================================
 "This group handles all omnisharp stuffs
 "===========================================================================================================
 let g:OmniSharp_start_without_solution=1
 let g:OmniSharp_server_stdio=1
 let g:ale_linters = { 'cs': ['OmniSharp'] }
+set signcolumn=yes
+
+let g:ale_sign_error = '•'
+let g:ale_sign_warning = '•'
+let g:ale_sign_info = '·'
+let g:ale_sign_style_error = '·'
+let g:ale_sign_style_warning = '·'
 
 " Update symantic highlighting on BufEnter and InsertLeave
-let g:OmniSharp_highlight_types = 2
-set completeopt=longest,menuone,preview
-set previewheight=5
+let g:OmniSharp_highlight_types = 3
+let g:OmniSharp_popup_position = 'peek'
+set completeopt=menuone,noinsert,noselect,popuphidden
+set completepopup=highlight:Pmenu,border:off
+let g:asyncomplete_auto_completeopt = 0
 let g:OmniSharp_timeout = 5
-augroup omnisharp_commands
-    autocmd!
 
-    " Show type information automatically when the cursor stops moving
-    autocmd CursorHold *.cs call OmniSharp#TypeLookupWithoutDocumentation()
+autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
 
-    " The following commands are contextual, based on the cursor position.
-    autocmd FileType cs nnoremap <buffer> gd :OmniSharpGotoDefinition<CR>
-    autocmd FileType cs nnoremap <buffer> <Leader>fi :OmniSharpFindImplementations<CR>
-    autocmd FileType cs nnoremap <buffer> <Leader>fs :OmniSharpFindSymbol<CR>
-    autocmd FileType cs nnoremap <buffer> <Leader>fu :OmniSharpFindUsages<CR>
+" All sharpenup mappings will begin with `<Space>os`, e.g. `,osgd` for
+" :OmniSharpGotoDefinition
+let g:sharpenup_map_prefix = ',os'
+let g:sharpenup_statusline_opts = { 'Text': '%s (%p/%P)' }
+let g:sharpenup_statusline_opts.Highlight = 0
 
-    " Finds members in the current buffer
-    autocmd FileType cs nnoremap <buffer> <Leader>fm :OmniSharpFindMembers<CR>
-
-    autocmd FileType cs nnoremap <buffer> <Leader>fx :OmniSharpFixUsings<CR>
-    autocmd FileType cs nnoremap <buffer> <Leader>tt :OmniSharpTypeLookup<CR>
-    autocmd FileType cs nnoremap <buffer> <Leader>dc :OmniSharpDocumentation<CR>
-    autocmd FileType cs nnoremap <buffer> <C-\> :OmniSharpSignatureHelp<CR>
-    autocmd FileType cs inoremap <buffer> <C-\> <C-o>:OmniSharpSignatureHelp<CR>
-
-    " Navigate up and down by method/property/field
-    autocmd FileType cs nnoremap <buffer> <C-k> :OmniSharpNavigateUp<CR>
-    autocmd FileType cs nnoremap <buffer> <C-j> :OmniSharpNavigateDown<CR>
-
-    " Find all code errors/warnings for the current solution and populate the quickfix window
-    autocmd FileType cs nnoremap <buffer> <Leader>cc :OmniSharpGlobalCodeCheck<CR>
+augroup OmniSharpIntegrations
+  autocmd!
+  autocmd User OmniSharpProjectUpdated,OmniSharpReady call lightline#update()
 augroup END
+
+if has('nvim')
+  let g:OmniSharp_popup_options = {
+    \ 'winhl': 'Normal:NormalFloat'
+    \}
+else
+  let g:OmniSharp_popup_options = {
+    \ 'highlight': 'Normal',
+    \ 'padding': [0, 0, 0, 0],
+    \ 'border': [1]
+    \}
+endif
+let g:OmniSharp_popup_mappings = {
+    \ 'sigNext': '<C-n>',
+    \ 'sigPrev': '<C-p>',
+    \ 'pageDown': ['<C-f>', '<PageDown>'],
+    \ 'pageUp': ['<C-b>', '<PageUp>']
+    \}
+let g:OmniSharp_highlight_groups = {
+    \ 'ExcludedCode': 'NonText'
+    \}
+"===========================================================================================================
+"Lightline stuff
+"===========================================================================================================
+let g:lightline = {
+\ 'colorscheme': 'gruvbox',
+\ 'active': {
+\   'right': [
+\     ['linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok'],
+\     ['lineinfo'], ['percent'],
+\     ['fileformat', 'fileencoding', 'filetype', 'sharpenup']
+\   ]
+\ },
+\ 'inactive': {
+\   'right': [['lineinfo'], ['percent'], ['sharpenup']]
+\ },
+\ 'component': {
+\   'sharpenup': sharpenup#statusline#Build()
+\ },
+\ 'component_expand': {
+\   'linter_checking': 'lightline#ale#checking',
+\   'linter_infos': 'lightline#ale#infos',
+\   'linter_warnings': 'lightline#ale#warnings',
+\   'linter_errors': 'lightline#ale#errors',
+\   'linter_ok': 'lightline#ale#ok'
+  \  },
+  \ 'component_type': {
+  \   'linter_checking': 'right',
+  \   'linter_infos': 'right',
+  \   'linter_warnings': 'warning',
+  \   'linter_errors': 'error',
+  \   'linter_ok': 'right'
+\  }
+\}
+
+" Use unicode chars for ale indicators in the statusline
+let g:lightline#ale#indicator_checking = "\uf110 "
+let g:lightline#ale#indicator_infos = "\uf129 "
+let g:lightline#ale#indicator_warnings = "\uf071 "
+let g:lightline#ale#indicator_errors = "\uf05e "
+let g:lightline#ale#indicator_ok = "\uf00c "
 "===========================================================================================================
 "for regex
 set magic
-"This line sets my background dark
-set background=dark
-"This line changes the theme of my editor.
-colorscheme darkshire
 "This line turns on syntax highlighting.
 syntax enable
 "this group makes tabs work and spacing nice
@@ -163,32 +249,13 @@ nmap <leader>f :Renamer<CR>
 "this group turns on line numbers and position numbers by default.
 set number
 set ruler
-"this group changes the colorscheme depending on the filetype
-"this line creates a new variable to hold my original colorscheme
-autocmd BufNewFile,BufRead *.* let g:tmpcolor=g:colors_name
-
-"these line changes the colorscheme to the desired one for that filetype.
-autocmd BufEnter *.cs colorscheme relaxedGreen
-autocmd BufEnter *.txt colorscheme defaultme | set ft=text
-autocmd BufEnter *.bat colorscheme relaxedGreen
-autocmd BufEnter *.JSON colorscheme relaxedGreen | set ft=JSON
-autocmd BufEnter *.xml colorscheme relaxedGreen | set ft=xml
-autocmd BufEnter *.cshtml colorscheme relaxedGreen | set ft=html
-autocmd BufEnter *.html colorscheme darkshire | set ft=html
-autocmd BufEnter *.css colorscheme relaxedGreen | set ft=css
-autocmd BufEnter *.ejs colorscheme darkshire | set ft=ejs
-autocmd BufEnter _vimrc colorscheme sv
-"these line returns the colorscheme to the original colorscheme when
-"exiting the buffer with the changed colorscheme.
-autocmd BufLeave *.cs exe 'colorscheme '.g:tmpcolor
-autocmd BufLeave *.txt exe 'colorscheme '.g:tmpcolor
-autocmd BufLeave *.bat exe 'colorscheme '.g:tmpcolor
-autocmd BufLeave *.JSON exe 'colorscheme '.g:tmpcolor
-autocmd BufLeave *.xml exe 'colorscheme '.g:tmpcolor
-autocmd BufLeave *.cshtml exe 'colorscheme '.g:tmpcolor
-autocmd BufLeave *.html exe 'colorscheme '.g:tmpcolor
-autocmd BufLeave *.css exe 'colorscheme '.g:tmpcolor
-autocmd BufLeave *.ejs exe 'colorscheme '.g:tmpcolor
+autocmd BufEnter *.txt set ft=text
+autocmd BufEnter *.JSON set ft=JSON
+autocmd BufEnter *.xml set ft=xml
+autocmd BufEnter *.cshtml set ft=html
+autocmd BufEnter *.html set ft=html
+autocmd BufEnter *.css set ft=css
+autocmd BufEnter *.ejs set ft=ejs
 "sets vim to auto read outside edits to a file
 set autoread
 "enables Emmet for only HTML, css, and php filetypes
@@ -202,4 +269,4 @@ set undodir=C:\Users\isaia\backups\\
 "this will allow special syntax for ip addresses.
 syn match ipaddr /\(\(25\_[0-5]\|2\_[0-4]\_[0-9]\|\_[01]\?\_[0-9]\_[0-9]\?\)\.\)\{3\}\(25\_[0-5]\|2\_[0-4]\_[0-9]\|\_[01]\?\_[0-9]\_[0-9]\?\)/
 hi link ipaddr Identifier
-set diffexpr=
+set diffexpr=et diffexpr=
