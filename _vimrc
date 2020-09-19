@@ -1,5 +1,5 @@
 set nocompatible
-"this line prevents text to wrap on screen edge
+"this line allows text to wrap on screen edge
 set wrap
 "vim-plug stuff
 silent! call plug#begin()
