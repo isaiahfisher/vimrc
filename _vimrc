@@ -1,78 +1,33 @@
-set nocompatible
-"this line allows text to wrap on screen edge
-set wrap
-"vim-plug stuff
 silent! call plug#begin()
-
 Plug 'nikvdp/ejs-syntax'
-
 Plug 'tpope/vim-commentary'
-
 Plug 'mattn/emmet-vim'
-
 Plug 'vimwiki/vimwiki'
-
 Plug 'zyedidia/vim-snake'
-
 Plug 'vim-scripts/L9'
-
 Plug 'ctrlpvim/ctrlp.vim'
-
 Plug 'scrooloose/nerdtree'
-
 Plug 'qpkorr/vim-renamer'
-
 Plug 'majutsushi/tagbar'
-
 Plug 'dense-analysis/ale'
-
 Plug 'Omnisharp/omnisharp-vim'
-
 Plug 'tpope/vim-dispatch'
-
 Plug 'RRethy/vim-illuminate'
-
 Plug 'prabirshrestha/asyncomplete.vim'
-
 Plug 'gruvbox-community/gruvbox'
-
 Plug 'itchyny/lightline.vim'
-
 Plug 'shinchu/lightline-gruvbox.vim'
-
 Plug 'maximbaz/lightline-ale'
-
 Plug 'nickspoons/vim-sharpenup'
-
 Plug 'tpope/vim-fugitive'
-
+Plug 'vimoxide/vim-cinnabar'
 call plug#end()
-"buffer becomes hidden when focus is lost
-set hid
-set belloff=all
-set updatetime=1000
-set encoding=utf-8
-scriptencoding utf-8
-"This group handles all gruvbox things
-"===========================================================================================================
-"This line sets my background dark
-set background=dark
-"This line changes the theme of my editor.
-augroup ColorschemePreferences
-  autocmd!
-  " These preferences clear some gruvbox background colours, allowing transparency
-  autocmd ColorScheme * highlight Normal     ctermbg=0 guibg=#000000
-  autocmd ColorScheme * highlight SignColumn ctermbg=NONE guibg=NONE
-  autocmd ColorScheme * highlight Todo       ctermbg=NONE guibg=NONE
-  " Link ALE sign highlights to similar equivalents without background colours
-  autocmd ColorScheme * highlight link ALEErrorSign   WarningMsg
-  autocmd ColorScheme * highlight link ALEWarningSign ModeMsg
-  autocmd ColorScheme * highlight link ALEInfoSign    Identifier
-augroup END
-colorscheme gruvbox
-"===========================================================================================================
-"This group handles all omnisharp stuffs
-"===========================================================================================================
+
+let mapleader=","
+
+colorscheme cinnabar-defined
+
+"{{{Omnisharp settings
 let g:OmniSharp_start_without_solution=1
 let g:OmniSharp_server_stdio=1
 let g:ale_linters = { 'cs': ['OmniSharp'] }
@@ -125,9 +80,11 @@ let g:OmniSharp_popup_mappings = {
 let g:OmniSharp_highlight_groups = {
     \ 'ExcludedCode': 'NonText'
     \}
-"===========================================================================================================
-"Lightline stuff
-"===========================================================================================================
+"This line handles vim-OmniCompletion
+inoremap <expr> <Tab> pumvisible() ? '<C-n>' : getline('.')[col('.')-2] =~# '[[:alnum:].-_#$]' ? '<C-x><C-o>' : '<Tab>'
+
+"}}}
+"{{{Lightline settings
 let g:lightline = {
 \ 'colorscheme': 'gruvbox',
 \ 'active': {
@@ -165,9 +122,20 @@ let g:lightline#ale#indicator_infos = "\uf129 "
 let g:lightline#ale#indicator_warnings = "\uf071 "
 let g:lightline#ale#indicator_errors = "\uf05e "
 let g:lightline#ale#indicator_ok = "\uf00c "
-"===========================================================================================================
+""}}}
+"{{{Settings
+"buffer becomes hidden when focus is lost
+set hid
+set belloff=all
+set updatetime=1000
+set encoding=utf-8
+scriptencoding utf-8
+
 "for regex
 set magic
+set nocompatible
+"this line allows text to wrap on screen edge
+set wrap
 "This line turns on syntax highlighting.
 syntax enable
 "this group makes tabs work and spacing nice
@@ -193,8 +161,6 @@ set showmatch
 "this group helps improve vim searching.
 set incsearch "search as characters are entered
 set hlsearch "highlights matches
-"This line handles vim-OmniCompletion
-inoremap <expr> <Tab> pumvisible() ? '<C-n>' : getline('.')[col('.')-2] =~# '[[:alnum:].-_#$]' ? '<C-x><C-o>' : '<Tab>'
 "this group handles how vim folds code blocks.
 set foldenable
 set foldlevelstart=10
@@ -202,9 +168,34 @@ set foldnestmax=10
 set foldmethod=indent
 "fullscreens gvim
 au GUIEnter * simalt ~x
-"------------------------------------------------------------
+"This line allows me to use the system clipboard inside of vim
+set clipboard=unnamed
+"this group turns on line numbers and position numbers by default.
+set number
+set ruler
+autocmd BufEnter *.txt set ft=text
+autocmd BufEnter *.JSON set ft=JSON
+autocmd BufEnter *.xml set ft=xml
+autocmd BufEnter *.cshtml set ft=html
+autocmd BufEnter *.html set ft=html
+autocmd BufEnter *.css set ft=css
+autocmd BufEnter *.ejs set ft=ejs
+"sets vim to auto read outside edits to a file
+set autoread
+"enables Emmet for only HTML, css, and php filetypes
+let g:user_emmet_install_global = 0
+autocmd FileType html,css,php EmmetInstall
+"saves backups, undos, and swaps to a special folder
+set backupdir=C:\Users\isaia\backups\\
+set directory=C:\Users\isaia\backups\\
+set undodir=C:\Users\isaia\backups\\
+"this will allow special syntax for ip addresses.
+syn match ipaddr /\(\(25\_[0-5]\|2\_[0-4]\_[0-9]\|\_[01]\?\_[0-9]\_[0-9]\?\)\.\)\{3\}\(25\_[0-5]\|2\_[0-4]\_[0-9]\|\_[01]\?\_[0-9]\_[0-9]\?\)/
+hi link ipaddr Identifier
+set diffexpr=
+"}}}
+"{{{Remaps
 "making things a bit faster to edit the vimrc
-let mapleader=","
 nmap <silent> <leader>ev :e $MYVIMRC<CR>
 nmap <silent> <leader>sv :so $MYVIMRC<CR>
 "tabbing management tab
@@ -227,8 +218,6 @@ nnoremap k gk
 nnoremap gV `[v`]
 "this line makes going into command mode easier.
 inoremap ii <esc>
-"This line allows me to use the system clipboard inside of vim
-set clipboard=unnamed
 "This is for tagbar
 nmap <leader>tb :TagbarToggle<CR>
 let g:tagbar_ctags_bin = 'C:\Users\isaia\Vim\ctags58\ctags.exe'
@@ -246,27 +235,4 @@ function! SetTagBar()
 endfunction
 "this line handles bulk file renaming
 nmap <leader>f :Renamer<CR>
-"this group turns on line numbers and position numbers by default.
-set number
-set ruler
-autocmd BufEnter *.txt set ft=text
-autocmd BufEnter *.JSON set ft=JSON
-autocmd BufEnter *.xml set ft=xml
-autocmd BufEnter *.cshtml set ft=html
-autocmd BufEnter *.html set ft=html
-autocmd BufEnter *.css set ft=css
-autocmd BufEnter *.ejs set ft=ejs
-"sets vim to auto read outside edits to a file
-set autoread
-"enables Emmet for only HTML, css, and php filetypes
-let g:user_emmet_install_global = 0
-autocmd FileType html,css,php EmmetInstall
-"saves backups, undotrees, and swap files to local backup directory located at
-"Backups
-set backupdir=C:\Users\isaia\backups\\
-set directory=C:\Users\isaia\backups\\
-set undodir=C:\Users\isaia\backups\\
-"this will allow special syntax for ip addresses.
-syn match ipaddr /\(\(25\_[0-5]\|2\_[0-4]\_[0-9]\|\_[01]\?\_[0-9]\_[0-9]\?\)\.\)\{3\}\(25\_[0-5]\|2\_[0-4]\_[0-9]\|\_[01]\?\_[0-9]\_[0-9]\?\)/
-hi link ipaddr Identifier
-set diffexpr=et diffexpr=
+"}}}
