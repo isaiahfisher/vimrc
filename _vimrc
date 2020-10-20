@@ -1,3 +1,13 @@
+"      __     __ ______ __       __ 
+"     |  \   |  \      \  \     /  \
+"     | ▓▓   | ▓▓\▓▓▓▓▓▓ ▓▓\   /  ▓▓
+"     | ▓▓   | ▓▓ | ▓▓ | ▓▓▓\ /  ▓▓▓
+"      \▓▓\ /  ▓▓ | ▓▓ | ▓▓▓▓\  ▓▓▓▓
+"       \▓▓\  ▓▓  | ▓▓ | ▓▓\▓▓ ▓▓ ▓▓
+"        \▓▓ ▓▓  _| ▓▓_| ▓▓ \▓▓▓| ▓▓
+"         \▓▓▓  |   ▓▓ \ ▓▓  \▓ | ▓▓
+"          \▓    \▓▓▓▓▓▓\▓▓      \▓▓
+                               
 silent! call plug#begin()
 Plug 'nikvdp/ejs-syntax'
 Plug 'tpope/vim-commentary'
@@ -21,6 +31,9 @@ Plug 'maximbaz/lightline-ale'
 Plug 'nickspoons/vim-sharpenup'
 Plug 'tpope/vim-fugitive'
 Plug 'vimoxide/vim-cinnabar'
+Plug 'tpope/vim-dadbod'
+Plug 'tpope/vim-jdaddy'
+Plug 'tpope/vim-jdaddy'
 call plug#end()
 
 let mapleader=","
