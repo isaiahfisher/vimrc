@@ -34,6 +34,7 @@ Plug 'vimoxide/vim-cinnabar'
 Plug 'tpope/vim-dadbod'
 Plug 'tpope/vim-jdaddy'
 Plug 'tpope/vim-jdaddy'
+Plug 'isaiahfisher/vim-cinnabar-defined'
 call plug#end()
 
 let mapleader=","
@@ -248,4 +249,46 @@ function! SetTagBar()
 endfunction
 "this line handles bulk file renaming
 nmap <leader>f :Renamer<CR>
+"}}}
+"{{{Splash Screen - Enable on line 292
+fun! Start()
+
+  "Create a new unnamed buffer to display our splash screen inside of.
+  enew
+
+  " Set some options for this buffer to make sure that does not act like a
+  " normal window.
+  setlocal
+    \ bufhidden=wipe
+    \ buftype=nofile
+    \ nobuflisted
+    \ nocursorcolumn
+    \ nocursorline
+    \ nolist
+    \ nonumber
+    \ noswapfile
+    \ norelativenumber
+
+  " Place your custom splash screen or message here.
+  exec ":r ~/Vim/.splashASCII.txt"
+
+  " When we are done writing out message set the buffer to readonly.
+  setlocal
+    \ nomodifiable
+    \ nomodified
+
+  " Just like with the default start page, when we switch to insert mode
+  " a new buffer should be opened which we can then later save.
+  nnoremap <buffer><silent> e :enew<CR>
+  nnoremap <buffer><silent> i :enew <bar> startinsert<CR>
+  nnoremap <buffer><silent> o :enew <bar> startinsert<CR>
+
+endfun
+
+" The number of files in the argument list of the current window.
+" If there are 0 then that means this is a new session and we want to display
+" our custom splash screen.
+if argc() == 0
+"  autocmd VimEnter * call Start()
+endif
 "}}}
