@@ -35,6 +35,9 @@ Plug 'tpope/vim-dadbod'
 Plug 'tpope/vim-jdaddy'
 Plug 'tpope/vim-jdaddy'
 Plug 'isaiahfisher/vim-cinnabar-defined'
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'othree/yajs.vim'
+Plug 'maxmellon/vim-jsx-pretty'
 call plug#end()
 
 let mapleader=","
@@ -44,7 +47,22 @@ colorscheme cinnabar-defined
 "{{{Omnisharp settings
 let g:OmniSharp_start_without_solution=1
 let g:OmniSharp_server_stdio=1
-let g:ale_linters = { 'cs': ['OmniSharp'] }
+"sets the linters for ale
+let g:ale_linters = { 
+            \        'cs': ['OmniSharp'],
+            \        'javascript': ['eslint'],
+            \        'vue': ['eslint']
+            \}
+"sets the fixers for ale
+let g:ale_fixers = {
+            \       'javascript': ['eslint'],
+            \       'typescript': ['tslint', 'prettier'],
+            \       'vue': ['eslint'],
+            \       'scss': ['prettier'],
+            \       'html': ['prettier'],
+            \}
+"allows ale to autofix formatting on file save
+let g:ale_fix_on_save = 1
 set signcolumn=yes
 
 let g:ale_sign_error = '•'
@@ -137,6 +155,15 @@ let g:lightline#ale#indicator_warnings = "\uf071 "
 let g:lightline#ale#indicator_errors = "\uf05e "
 let g:lightline#ale#indicator_ok = "\uf00c "
 ""}}}
+"{{{Prettier settings
+"these settings set prettier to format my code
+au FileType javascript setlocal formatprg=prettier
+au FileType javascript.jsx setlocal formatprg=prettier
+au FileType typescript setlocal formatprg=prettier\ --parser\ typescript
+au FileType html setlocal formatprg=js-beautify\ --type\ html
+au FileType scss setlocal formatprg=prettier\ --parser\ css
+au FileType css setlocal formatprg=prettier\ --parser\ css
+"}}}
 "{{{Settings
 "buffer becomes hidden when focus is lost
 set hid
@@ -250,14 +277,14 @@ endfunction
 "this line handles bulk file renaming
 nmap <leader>f :Renamer<CR>
 "}}}
-"{{{Splash Screen - Enable on line 292
+"{{{Custom Splash Screen - enabled by uncommenting line 292
 fun! Start()
 
   "Create a new unnamed buffer to display our splash screen inside of.
   enew
 
   " Set some options for this buffer to make sure that does not act like a
-  " normal window.
+  " normal winodw.
   setlocal
     \ bufhidden=wipe
     \ buftype=nofile
@@ -289,6 +316,6 @@ endfun
 " If there are 0 then that means this is a new session and we want to display
 " our custom splash screen.
 if argc() == 0
-"  autocmd VimEnter * call Start()
+  autocmd VimEnter * call Start()
 endif
 "}}}
