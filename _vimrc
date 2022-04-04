@@ -230,9 +230,11 @@ set autoread
 let g:user_emmet_install_global = 0
 autocmd FileType html,css,php EmmetInstall
 "saves backups, undos, and swaps to a special folder
-set backupdir=C:\Users\isaia\backups\\
-set directory=C:\Users\isaia\backups\\
-set undodir=C:\Users\isaia\backups\\
+" BACKUPS: uncomment and change directory to configure backups management
+" set backupdir=C:\Users\isaia\backups\\
+" set directory=C:\Users\isaia\backups\\
+" set undodir=C:\Users\isaia\backups\\
+" BACKUPS:
 "this will allow special syntax for ip addresses.
 syn match ipaddr /\(\(25\_[0-5]\|2\_[0-4]\_[0-9]\|\_[01]\?\_[0-9]\_[0-9]\?\)\.\)\{3\}\(25\_[0-5]\|2\_[0-4]\_[0-9]\|\_[01]\?\_[0-9]\_[0-9]\?\)/
 hi link ipaddr Identifier
@@ -264,6 +266,7 @@ nnoremap gV `[v`]
 inoremap ii <esc>
 "This is for tagbar
 nmap <leader>tb :TagbarToggle<CR>
+" CTAGS: replace with proper path when configuring new machine.
 let g:tagbar_ctags_bin = 'C:\Users\isaia\Vim\ctags58\ctags.exe'
 "this line automatically opens NERDTree on start if no file is selected.
 "au vimEnter * if !argc() | NERDTree | endif
@@ -318,7 +321,9 @@ endfun
 " The number of files in the argument list of the current window.
 " If there are 0 then that means this is a new session and we want to display
 " our custom splash screen.
-if argc() == 0
-  autocmd VimEnter * call Start()
-endif
+" SPLASHSCREEN: uncomment between these lines for custom splash screen.
+" if argc() == 0
+"  autocmd VimEnter * call Start()
+" endif
+" SPLASHSCREEN:
 "}}}
