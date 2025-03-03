@@ -33,6 +33,8 @@ Plug 'isaiahfisher/vim-cinnabar-defined'
 Plug 'othree/yajs.vim'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'jwalton512/vim-blade'
+Plug 'dense-analysis/ale'
+Plug 'liuchengxu/space-vim-dark'
 call plug#end()
 
 "vim9 packages
@@ -40,9 +42,14 @@ packadd lsp
 
 let mapleader=","
 
+"space-vim-dark
+"let g:space_vim_dark_background = 234
+"colorscheme space-vim-dark
+
 colorscheme default
 
 "{{{LSP Settings
+"intelephense php language server
 "intelephense php language server
 call LspAddServer([#{
         \   name: 'intelephense',
@@ -67,6 +74,68 @@ call LspAddServer([#{
         \   args: ['--stdio']
         \ }])
 
+"yaml language server
+call LspAddServer([#{
+            \   name: 'yaml-language-server',
+            \   filetype: 'yaml',
+            \   path: '/Users/isaiahfisher/.nvm/versions/node/v14.19.1/bin/yaml-language-server',
+            \   args: ['--stdio'],
+            \   workspaceConfig: #{
+            \       yaml: #{
+            \           schemas: {
+            \               "https://sweet-serve.sweetwater.com/api/schemas/helm/main": [
+            \                   "**helm/values*.yaml",
+            \                   "**helm/**/values*.yaml"
+            \               ]
+            \           }
+            \       }
+            \   }
+            \ }])
+
+"go language server
+call LspAddServer([#{name: 'gopls',
+                 \   filetype: 'go',
+                 \   path: '/opt/homebrew/bin/gopls',
+                 \   args: ['serve'],
+                 \   workspaceConfig: #{
+                 \     gopls: #{
+                 \       hints: #{
+                 \         assignVariableTypes: v:true,
+                 \         compositeLiteralFields: v:true,
+                 \         compositeLiteralTypes: v:true,
+                 \         constantValues: v:true,
+                 \         functionTypeParameters: v:true,
+                 \         parameterNames: v:true,
+                 \         rangeVariableTypes: v:true
+                 \       }
+                 \     }
+                 \   }
+                 \ }])
+
+"swift language server
+call LspAddServer([#{name: 'swiftls',
+                 \   filetype: ['swift'],
+                 \   path: '/usr/bin/xcrun',
+                 \   args: ['sourcekit-lsp']
+                 \ }])
+
+"python language server
+call LspAddServer([#{name: 'pyright',
+                 \   filetype: 'python',
+                 \   path: '/Users/isaiahfisher/.nvm/versions/node/v20.18.2/bin/pyright',
+                 \   args: ['--stdio'],
+                 \   workspaceConfig: #{
+                 \     python: #{
+                 \       pythonPath: '/usr/bin/python3'
+                 \   }}
+                 \ }])
+
+"C# language server
+call LspAddServer([#{name: 'omnisharp',
+                 \   filetype: 'cs',
+                 \   path: '/Users/isaiahfisher/.cache/omnisharp-vim/omnisharp-roslyn/run',
+                 \ }])
+
 "for document highlighting in vimscript and help
 let g:markdown_fenced_languages = [
       \ 'vim',
@@ -81,8 +150,19 @@ call LspOptionsSet(#{
 nnoremap <leader>gd :LspGotoDefinition<CR>
 nnoremap <leader>ne :LspDiag next<CR>
 nnoremap <leader>pd :LspPeekDefinition<CR>
-nnoremap <leader>h  :LspHover<CR>
+nnoremap <leader>h  :LspHover<CR>"
 
+"}}}
+
+"{{{ALE settings
+let g:ale_fixers = {
+            \ 'javascript': ['prettier'],
+            \ 'css': ['prettier'],
+            \ 'vue': ['prettier'],
+            \}
+let g:ale_linters_explicit = 1
+let g:ale_fix_on_save = 1
+let g:ale_javascript_prettier_use_local_config = 1
 "}}}
 "{{{Lightline settings
 let g:lightline = {
@@ -136,6 +216,8 @@ set magic
 set nocompatible
 "this line allows text to wrap on screen edge
 set wrap
+"Sets redraw time to fix typescript server issues
+set re=0
 "This line turns on syntax highlighting.
 syntax enable
 "this group makes tabs work and spacing nice
@@ -234,6 +316,9 @@ endfunction
 "this line handles bulk file renaming
 nmap <leader>f :Renamer<CR>
 map <silent><leader>jd :CtrlPTag<cr><c-\>w
+" handles using tab for autocompletion suggestions
+inoremap <expr> <TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <expr> <S-TAB> pumvisible() ? "\<C-p>" : "\<TAB>"
 "}}}
 "{{{Custom Splash Screen - enabled by uncommenting line 292
 fun! Start()

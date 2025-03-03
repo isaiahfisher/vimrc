@@ -1,4 +1,7 @@
 https://github.com/bmewburn/vscode-intelephense
 https://github.com/typescript-language-server/typescript-language-server
 https://github.com/iamcco/vim-language-server
-
+https://github.com/microsoft/pyright
+https://github.com/OmniSharp/omnisharp-roslyn
+https://github.com/redhat-developer/yaml-language-server
+https://github.com/golang/tools/tree/master/gopls
